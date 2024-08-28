@@ -1,5 +1,5 @@
-import 'package:expense_app/data/model/add_data.dart';
-import 'package:expense_app/data/listdata.dart';
+import 'package:expense_app/content/model/add_data.dart';
+import 'package:expense_app/content/listdata.dart';
 import 'package:expense_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
