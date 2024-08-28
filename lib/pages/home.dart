@@ -1,5 +1,6 @@
 import 'package:expense_app/content/model/add_data.dart';
 import 'package:expense_app/content/listdata.dart';
+import 'package:expense_app/content/utility.dart';
 import 'package:expense_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -221,7 +222,7 @@ class _HomeState extends State<Home> {
                     spreadRadius: 6,
                   )
                 ]),
-            child: const Column(
+            child: Column(
               children: [
                 SizedBox(
                   height: 10,
@@ -256,7 +257,7 @@ class _HomeState extends State<Home> {
                   child: Row(
                     children: [
                       Text(
-                        '\$ 3,500',
+                        '\$ ${total()}',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 25,
@@ -327,14 +328,14 @@ class _HomeState extends State<Home> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '\$1,500',
+                        '\$ ${income()}',
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 17,
                             color: Colors.white),
                       ),
                       Text(
-                        '\$500',
+                        '\$ ${expenses()}',
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 17,

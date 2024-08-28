@@ -1,4 +1,6 @@
+import 'package:expense_app/content/model/add_data.dart';
 import 'package:expense_app/content/top.dart';
+import 'package:expense_app/content/utility.dart';
 import 'package:expense_app/widgets/chart.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +13,8 @@ class Statistics extends StatefulWidget {
 
 class _StatisticsState extends State<Statistics> {
   final List<String> day = ['Day', 'Week', 'Month', 'Year'];
+  List f = [today(), week(), month(), year()];
+  List<AddData> a = [];
   int indexColor = 0;
 
   @override
@@ -132,38 +136,36 @@ class _StatisticsState extends State<Statistics> {
               ),
             ),
             SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
+              delegate: SliverChildBuilderDelegate((context, index) {
                 return ListTile(
-                  leading: Image.asset('images/${geter_top()[index].image!}',
-                  height: 40,
-                  width: 40,
+                  leading: Image.asset(
+                    'images/${geter_top()[index].image!}',
+                    height: 40,
+                    width: 40,
                   ),
-                 title: Text(
-                  geter_top()[index].name!,
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  title: Text(
+                    geter_top()[index].name!,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   subtitle: Text(
-                  geter_top()[index].time!,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                  ),
+                    geter_top()[index].time!,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   trailing: Text(
-                  geter_top()[index].fee!,
-                  style: const TextStyle(
-                    fontSize: 19,
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
+                    geter_top()[index].fee!,
+                    style: const TextStyle(
+                      fontSize: 19,
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 );
-              },
-              childCount: geter_top().length
-              ),
+              }, childCount: geter_top().length),
             )
           ],
         ),
