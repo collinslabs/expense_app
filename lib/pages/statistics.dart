@@ -1,4 +1,4 @@
-import 'package:expense_app/content/top.dart';
+import 'package:expense_app/data/top.dart';
 import 'package:expense_app/widgets/chart.dart';
 import 'package:flutter/material.dart';
 
@@ -16,6 +16,7 @@ class _StatisticsState extends State<Statistics> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromRGBO(212, 222, 230, 1),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [

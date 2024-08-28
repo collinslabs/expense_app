@@ -1,5 +1,9 @@
-import 'package:expense_app/content/listdata.dart';
+import 'package:expense_app/data/model/add_data.dart';
+import 'package:expense_app/data/listdata.dart';
+import 'package:expense_app/main.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -9,77 +13,131 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  late Box<AddData> box;
+  var history;
+
+  final List<String> day = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ];
+
   @override
+  void initState() {
+    super.initState();
+    openBox();
+  }
+
+  Future<void> openBox() async {
+    box = await Hive.openBox<AddData>('data');
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    box.close();
+    super.dispose();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromRGBO(212, 222, 230, 1),
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: SizedBox(height: 340, child: _header()),
-            ),
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Transactions History',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 19,
-                          color: Colors.black),
-                    ),
-                    Text(
-                      'See all',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                          color: Colors.grey),
-                    ),
-                  ],
+        child: ValueListenableBuilder(
+          valueListenable: box.listenable(),
+          builder: (context, value, child) {
+            return
+            CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: SizedBox(height: 340, child: _header()),
                 ),
-              ),
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  return ListTile(
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: Image.asset('images/${geter()[index].image!}', 
-                      height: 40,
-                      width: 40,
-                      ),
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Transactions History',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 19,
+                              color: Colors.black),
+                        ),
+                        Text(
+                          'See all',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                              color: Colors.grey),
+                        ),
+                      ],
                     ),
-                    title: Text(
-                      geter()[index].name!,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                      ),
-                    ),
-                    subtitle: Text(
-                      geter()[index].time!,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    trailing: Text(
-                      geter()[index].fee!,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 19,
-                          color: geter()[index].buy! ? Colors.red: Colors.green ,
-                      ),
-                      ),
-                  );
-                },
-                childCount: geter().length,
-              ),
-            ),
-          ],
+                  ),
+                ),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final history = box.getAt(index);
+                      return getList(history!, index);
+                    },
+                    childCount: box.length,
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget getList(AddData history, int index) {
+    return Dismissible(
+      key: UniqueKey(),
+      onDismissed: (direction) {
+        history.delete();
+      },
+      child: get(index, history),
+    );
+  }
+
+  ListTile get(int index, AddData history) {
+    return ListTile(
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(5),
+        child: Image.asset(
+          'images/${geter()[index].image!}',
+          height: 40,
+          width: 40,
+        ),
+      ),
+      title: Text(
+        //geter()[index].name!,
+        history.name,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 15,
+        ),
+      ),
+      subtitle: Text(
+        '${day[history.dateTime.weekday - 1]} ${history.dateTime.year}-${history.dateTime.month.toString().padLeft(2, '0')}-${history.dateTime.day.toString().padLeft(2, '0')}',
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      trailing: Text(
+        //geter()[index].fee!,
+        history.amount,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 19,
+          color: history.IN == 'Income' ? Colors.green : Colors.red,
         ),
       ),
     );

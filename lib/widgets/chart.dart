@@ -12,6 +12,7 @@ class _ChartState extends State<Chart> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      
         width: double.infinity,
         height: 300,
         child: SfCartesianChart(
