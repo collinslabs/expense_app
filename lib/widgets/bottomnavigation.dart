@@ -1,6 +1,8 @@
 import 'package:expense_app/pages/add.dart';
 import 'package:expense_app/pages/home.dart';
+import 'package:expense_app/pages/profile.dart';
 import 'package:expense_app/pages/statistics.dart';
+
 import 'package:flutter/material.dart';
 
 class BottomNav extends StatefulWidget {
@@ -12,9 +14,10 @@ class BottomNav extends StatefulWidget {
 
 class _BottomNavState extends State<BottomNav> {
   int index_color = 0;
-  List Screen = [Home(), Statistics(), Home(), Statistics()];
+  List Screen = [Home(), Statistics(), Home(), ProfilePage()];
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: Color.fromRGBO(212, 222, 230, 1),
       body: Screen[index_color],
@@ -29,6 +32,7 @@ class _BottomNavState extends State<BottomNav> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
+         notchMargin: 8.0,
         child: Padding(
           padding: const EdgeInsets.only(
             top: 7.5,

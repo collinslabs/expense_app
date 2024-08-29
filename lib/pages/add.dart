@@ -19,10 +19,18 @@ class _AddScreenState extends State<AddScreen> {
   final TextEditingController amount = TextEditingController();
   FocusNode amt = FocusNode();
   final List<String> _item = [
-    'Food',
-    'Transfer',
+    'Food & Drinks',
+    'Salary Income',
+    'Business Income',
     'Transportation',
-    'Education'
+    'Housing',
+    'Education',
+    'Clothing',
+    'Shopping',
+    'Investments',
+    'Communication',
+    'Entertainment',
+    'Vehicle',
   ];
   final List<String> _item1 = [
     'Income',
@@ -65,31 +73,19 @@ class _AddScreenState extends State<AddScreen> {
       height: 550,
       width: 350,
       child: Column(children: [
-        SizedBox(
-          height: 50,
-        ),
+        SizedBox(height: 50,),
         name(),
-        SizedBox(
-          height: 30,
-        ),
+        SizedBox(height: 30,),
         reasonn(),
-        SizedBox(
-          height: 30,
-        ),
+        SizedBox(height: 30,),
         amountt(),
-        SizedBox(
-          height: 30,
-        ),
+        SizedBox(height: 30,),
         howw(),
-        SizedBox(
-          height: 30,
-        ),
+        SizedBox(height: 30,),
         date_time(),
         Spacer(),
         savee(),
-        SizedBox(
-          height: 20,
-        )
+        SizedBox(height: 20,)
       ]),
     );
   }

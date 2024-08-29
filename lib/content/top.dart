@@ -10,7 +10,7 @@ List<money> geter_top() {
   snapFood.name = 'snap food';
 
   money snap = money();
-  snap.image = "jr.jpg";
+  snap.image = "jtn.png";
   snap.time = 'today';
   snap.buy = true;
   snap.name = 'Transfer';

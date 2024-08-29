@@ -15,8 +15,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   late Box<AddData> box;
-  var history;
-
   final List<String> day = [
     'Monday',
     'Tuesday',
@@ -38,21 +36,19 @@ class _HomeState extends State<Home> {
     setState(() {});
   }
 
-  @override
-  void dispose() {
-    box.close();
-    super.dispose();
-  }
-
   Widget build(BuildContext context) {
+    if (!Hive.isBoxOpen('data')) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     return Scaffold(
       backgroundColor: Color.fromRGBO(212, 222, 230, 1),
       body: SafeArea(
         child: ValueListenableBuilder(
           valueListenable: box.listenable(),
           builder: (context, value, child) {
-            return
-            CustomScrollView(
+            return CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
                   child: SizedBox(height: 340, child: _header()),
@@ -227,7 +223,7 @@ class _HomeState extends State<Home> {
                 SizedBox(
                   height: 10,
                 ),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: 15,
                   ),
@@ -269,7 +265,7 @@ class _HomeState extends State<Home> {
                 SizedBox(
                   height: 10,
                 ),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: 15,
                   ),
