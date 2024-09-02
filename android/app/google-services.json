@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "831259877027",
+    "project_id": "expen-pp",
+    "storage_bucket": "expen-pp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:831259877027:android:b22564b3b3d6cc6557e916",
+        "android_client_info": {
+          "package_name": "com.example.expense_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjRfQH77_13Ki_phnEm5o04ztEfuh6Dpc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
