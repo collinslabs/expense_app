@@ -12,16 +12,15 @@ class Statistics extends StatefulWidget {
 }
 
 ValueNotifier kj = ValueNotifier<int>(0);
+
 class _StatisticsState extends State<Statistics> {
-   List day = ['Day', 'Week', 'Month', 'Year'];
-   List f = [today(), week(), month(), year()];
+  List day = ['Day', 'Week', 'Month', 'Year'];
+  List f = [today(), week(), month(), year()];
   List<AddData> a = [];
   int index_color = 0;
 
-
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       backgroundColor: Color.fromRGBO(212, 222, 230, 1),
       body: SafeArea(
@@ -36,8 +35,10 @@ class _StatisticsState extends State<Statistics> {
     );
   }
 
-  
   CustomScrollView custom() {
+    // Filter the list to include only items with an amount greater than 10,000
+    List<AddData> filteredList = a.where((item) => double.parse(item.amount) > 5000).toList();
+
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
@@ -47,7 +48,7 @@ class _StatisticsState extends State<Statistics> {
               const Text(
                 'Statistics',
                 style: TextStyle(
-                  color: Colors.black,
+                  color: Color.fromARGB(255, 83, 53, 7),
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
                 ),
@@ -124,38 +125,39 @@ class _StatisticsState extends State<Statistics> {
           ),
         ),
         SliverList(
-            delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            return ListTile(
-              leading: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                //child: Image.asset('images/${a[index].name}.png', height: 40),
-              ),
-              title: Text(
-                a[index].name,
-                style: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w600,
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              return ListTile(
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  // child: Image.asset('images/${filteredList[index].name}.png', height: 40),
                 ),
-              ),
-              subtitle: Text(
-                ' ${a[index].dateTime.year}-${a[index].dateTime.day}-${a[index].dateTime.month}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
+                title: Text(
+                  filteredList[index].name,
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              trailing: Text(
-                a[index].amount,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 19,
-                  color: a[index].IN == 'Income' ? Colors.green : Colors.red,
+                subtitle: Text(
+                  '${filteredList[index].dateTime.year}-${filteredList[index].dateTime.day}-${filteredList[index].dateTime.month}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-            );
-          },
-          childCount: a.length,
-        ))
+                trailing: Text(
+                  filteredList[index].amount,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 19,
+                    color: filteredList[index].IN == 'Income' ? Colors.green : Colors.red,
+                  ),
+                ),
+              );
+            },
+            childCount: filteredList.length,
+          ),
+        ),
       ],
     );
   }

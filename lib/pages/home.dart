@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:expense_app/user_auth/user_firebase_services/authentication.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:expense_app/content/model/add_data.dart';
 import 'package:expense_app/content/listdata.dart';
 import 'package:expense_app/content/utility.dart';
-import 'package:expense_app/main.dart';
-import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:expense_app/pages/full_history.dart';
+import 'package:expense_app/pages/login.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -25,10 +28,14 @@ class _HomeState extends State<Home> {
     'Sunday',
   ];
 
+  User? user; // To store the logged-in user
+  String? userName; // To store the user's name
+
   @override
   void initState() {
     super.initState();
     openBox();
+    fetchUserInfo();
   }
 
   Future<void> openBox() async {
@@ -36,6 +43,30 @@ class _HomeState extends State<Home> {
     setState(() {});
   }
 
+  Future<void> fetchUserInfo() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final authServices = AuthServices();
+      final userData = await authServices.getUserData(user.uid);
+      setState(() {
+        this.user = user;
+        userName = userData?['name'];
+      });
+    }
+  }
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Good morning';
+    } else if (hour < 17) {
+      return 'Good afternoon';
+    } else {
+      return 'Good evening';
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (!Hive.isBoxOpen('data')) {
       return const Center(
@@ -43,7 +74,7 @@ class _HomeState extends State<Home> {
       );
     }
     return Scaffold(
-      backgroundColor: Color.fromRGBO(212, 222, 230, 1),
+      backgroundColor: const Color.fromRGBO(212, 222, 230, 1),
       body: SafeArea(
         child: ValueListenableBuilder(
           valueListenable: box.listenable(),
@@ -53,25 +84,39 @@ class _HomeState extends State<Home> {
                 SliverToBoxAdapter(
                   child: SizedBox(height: 340, child: _header()),
                 ),
-                const SliverToBoxAdapter(
+                SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        const Text(
                           'Transactions History',
                           style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 19,
-                              color: Colors.black),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 19,
+                            color: Colors.black,
+                          ),
                         ),
-                        Text(
-                          'See all',
-                          style: TextStyle(
+                        GestureDetector(
+                          onTap: () {
+                            if (box.length > 5) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => FullHistory(box: box),
+                                ),
+                              );
+                            }
+                          },
+                          child: const Text(
+                            'See all',
+                            style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 15,
-                              color: Colors.grey),
+                              color: Color.fromARGB(255, 70, 43, 3),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -83,7 +128,7 @@ class _HomeState extends State<Home> {
                       final history = box.getAt(index);
                       return getList(history!, index);
                     },
-                    childCount: box.length,
+                    childCount: box.length > 5 ? 5 : box.length,
                   ),
                 ),
               ],
@@ -115,7 +160,6 @@ class _HomeState extends State<Home> {
         ),
       ),
       title: Text(
-        //geter()[index].name!,
         history.name,
         style: const TextStyle(
           fontWeight: FontWeight.w600,
@@ -129,7 +173,6 @@ class _HomeState extends State<Home> {
         ),
       ),
       trailing: Text(
-        //geter()[index].fee!,
         history.amount,
         style: TextStyle(
           fontWeight: FontWeight.w600,
@@ -141,6 +184,9 @@ class _HomeState extends State<Home> {
   }
 
   Widget _header() {
+    final greeting = _getGreeting();
+    final displayName = userName ?? 'User'; // Fallback to 'User' if no name
+
     return Stack(
       children: [
         Column(
@@ -157,38 +203,60 @@ class _HomeState extends State<Home> {
                 children: [
                   Positioned(
                       top: 35,
-                      left: 340,
+                      left: 280,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(7),
                         child: Container(
                           height: 40,
                           width: 40,
-                          color: const Color.fromARGB(255, 146, 145, 161),
+                          color: Colors.white,
                           child: const Icon(
                             Icons.notification_add_outlined,
                             size: 30,
-                            color: Colors.white,
+                            color: Color.fromARGB(255, 70, 43, 3),
                           ),
                         ),
                       )),
-                  const Padding(
-                    padding: EdgeInsets.only(
-                      top: 35,
-                      left: 10,
+                  Positioned(
+                    top: 35,
+                    left: 340,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(7),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => LoginPage()),
+                          );
+                        },
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          color: Colors.white,
+                          child: const Icon(
+                            Icons.power_settings_new,
+                            size: 30,
+                            color: Color.fromARGB(255, 70, 43, 3),
+                          ),
+                        ),
+                      ),
                     ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 35, left: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Good afternoon',
-                          style: TextStyle(
+                          '$greeting',
+                          style: const TextStyle(
                               fontWeight: FontWeight.w500,
                               fontSize: 16,
                               color: Colors.white),
                         ),
                         Text(
-                          'Jones',
-                          style: TextStyle(
+                          displayName,
+                          style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 20,
                               color: Colors.white),
@@ -220,13 +288,9 @@ class _HomeState extends State<Home> {
                 ]),
             child: Column(
               children: [
-                SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 const Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 15,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -245,16 +309,14 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 7,
-                ),
+                const SizedBox(height: 7),
                 Padding(
-                  padding: EdgeInsets.only(left: 15),
+                  padding: const EdgeInsets.only(left: 15),
                   child: Row(
                     children: [
                       Text(
-                        '\$ ${total()}',
-                        style: TextStyle(
+                        '\KES ${total()}',
+                        style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 25,
                             color: Colors.white),
@@ -262,79 +324,37 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 const Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 15,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 13,
-                            backgroundColor: Color.fromARGB(255, 146, 145, 161),
-                            child:
-                                Icon(Icons.arrow_downward, color: Colors.white),
-                          ),
-                          SizedBox(
-                            width: 7,
-                          ),
-                          Text(
-                            'Income',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                                color: Colors.white),
-                          ),
-                        ],
+                      Text(
+                        'Expenses',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Colors.white),
                       ),
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 13,
-                            backgroundColor: Color.fromARGB(255, 146, 145, 161),
-                            child:
-                                Icon(Icons.arrow_upward, color: Colors.white),
-                          ),
-                          SizedBox(
-                            width: 7,
-                          ),
-                          Text(
-                            'Expenses',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                                color: Colors.white),
-                          ),
-                        ],
+                      Icon(
+                        Icons.more_horiz,
+                        size: 30,
+                        color: Colors.white,
                       ),
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 6,
-                ),
+                const SizedBox(height: 7),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30),
+                  padding: const EdgeInsets.only(left: 15),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '\$ ${income()}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 17,
-                            color: Colors.white),
-                      ),
-                      Text(
-                        '\$ ${expenses()}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 17,
+                        '\KES ${totalExpenses()}',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
                             color: Colors.white),
                       ),
                     ],
@@ -346,5 +366,27 @@ class _HomeState extends State<Home> {
         ),
       ],
     );
+  }
+
+  double total() {
+    double total = 0;
+    for (var item in box.values) {
+      if (item.IN == 'Income') {
+        total += double.parse(item.amount);
+      } else {
+        total -= double.parse(item.amount);
+      }
+    }
+    return total;
+  }
+
+  double totalExpenses() {
+    double total = 0;
+    for (var item in box.values) {
+      if (item.IN == 'Expense') {
+        total += double.parse(item.amount);
+      }
+    }
+    return total;
   }
 }
