@@ -215,7 +215,7 @@ class ProfilePageState extends State<ProfilePage>
           ),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(left: 10.0),
+              padding: const EdgeInsets.only(left: 10.0),
               child: Container(
                 child: ElevatedButton(
                   child: Text("Cancel"),
@@ -281,7 +281,7 @@ class ProfilePageState extends State<ProfilePage>
             child: TextField(
               decoration: InputDecoration(hintText: value),
               enabled: !_status,
-              obscureText: label == "Password" && _status == false, // Show password input type
+              obscureText: label == "Password" && _status == false, 
             ),
           ),
         ],

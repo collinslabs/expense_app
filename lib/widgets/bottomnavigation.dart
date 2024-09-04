@@ -1,4 +1,5 @@
 import 'package:expense_app/pages/add.dart';
+import 'package:expense_app/pages/goals.dart';
 import 'package:expense_app/pages/home.dart';
 import 'package:expense_app/pages/profile.dart';
 import 'package:expense_app/pages/statistics.dart';
@@ -14,7 +15,7 @@ class BottomNav extends StatefulWidget {
 
 class _BottomNavState extends State<BottomNav> {
   int index_color = 0;
-  List Screen = [Home(), Statistics(), Home(), ProfilePage()];
+  List Screen = [Home(), Statistics(), FinancialGoalsPage(), ProfilePage()];
   @override
   Widget build(BuildContext context) {
     
